@@ -1,9 +1,6 @@
-package server;
+package serverold;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.util.logging.Logger;
 
 public class ServerMain {
     public static void main(String[] args) {

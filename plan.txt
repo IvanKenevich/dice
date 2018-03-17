@@ -1,12 +1,12 @@
                 A GAME
-Server serves 2 client that throw 5 dice.
+Server serves 2 clientold that throw 5 dice.
 
-All the logic happens on the server. It tells each client what it's supposed to be doing
-and then the client performs these operations (like listening for mouse events) and sends
-the result back to the server
+All the logic happens on the serverold. It tells each clientold what it's supposed to be doing
+and then the clientold performs these operations (like listening for mouse events) and sends
+the result back to the serverold
 
-Each client will have a simple GUI that can control the game
-Maybe make a GUI for the server just for fun?
+Each clientold will have a simple GUI that can control the game
+Maybe make a GUI for the serverold just for fun?
 
               GAME LOGIC
 1. Someone starts at random, throws dice.

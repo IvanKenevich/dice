@@ -1,7 +1,7 @@
-package client;
+package clientold;
 
-import server.Player;
-import server.Server;
+import serverold.Player;
+import serverold.Server;
 
 import java.io.IOException;
 import java.net.Socket;

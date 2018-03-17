@@ -1,10 +1,10 @@
                        CLIENT
-Talks to the server, throws dice, interacts with the user
+Talks to the serverold, throws dice, interacts with the user
 
 class Client {
     main() {
         // Make a socket
-        // Connect it to server
-	// enter a loop(sequence?) that reads commands from the server
+        // Connect it to serverold
+	// enter a loop(sequence?) that reads commands from the serverold
     }
 }

@@ -4,60 +4,124 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.ServerSocket;
+import java.util.Random;
 
 public class Player implements AutoCloseable {
-    private Socket socket;
-    private InputStream is;
-    private OutputStream os;
+    // connection to the actual player
+    private Socket client;
+
+    private byte[] hand;
+
+    private InputStream in;
+    private OutputStream out;
+
+    private Random random;
+
+    private final int HAND_SIZE = 5;
 
     /**
-     * @param server the server socket to listen to for connections
-     * @throws IOException when the socket fails to connect
+     * @param client the socket to send and receive information from
+     * @throws IOException if the socket connection fails
      */
-    public Player(ServerSocket server) throws IOException {
-        socket = server.accept();
+    public Player(Socket client) throws IOException {
+        this.client = client;
 
-        is = socket.getInputStream();
-        os = socket.getOutputStream();
+        hand = new byte[HAND_SIZE];
+
+        in = client.getInputStream();
+        out = client.getOutputStream();
+
+        random = new Random();
     }
 
-    public Player(Socket socket) throws IOException {
-        this.socket = socket;
+    /**
+     * Waits for the player to send a byte, rolls the Player's hand,
+     * and sends the result to the socket.
+     *
+     * @return the result of the roll
+     */
+    public byte[] roll() throws IOException {
+        readByte();
 
-        is = socket.getInputStream();
-        os = socket.getOutputStream();
+        rollDice();
+        out.write(hand);
+
+        return hand;
     }
 
-    public void write(byte data) throws IOException {
-        os.write(data);
+    /**
+     * Waits for the player to send the indices of the dice they wish to reroll,
+     * rerolls them, and sends the result to the socket
+     *
+     * @return the result of the reroll
+     */
+    public byte[] reroll() throws IOException {
+        try {
+            rerollDice(read());
+        } catch (IOException e) {
+            throw new IOException("Error while reading to socket during reroll:" + e.getMessage());
+        }
+        try {
+            out.write(hand);
+        } catch (IOException e) {
+            throw new IOException("Error while writing to socket during reroll:" + e.getMessage());
+        }
+
+        return hand;
     }
 
-    public void write(byte[] data) throws IOException {
-        os.write(data);
+    /**
+     * Sends the Player's turn to the socket.
+     *
+     * @param turn which turn it is
+     */
+    public void sendTurn(byte turn) throws IOException {
+        out.write(turn);
     }
 
-    public byte readByte() throws IOException {
+    public void sendOpponentThrow(byte[] opponentThrow) throws IOException {
+        out.write(opponentThrow);
+    }
+
+    private byte readByte() throws IOException {
         return read(1)[0];
     }
 
-    public byte[] read() throws IOException {
-        int length = 5;
+    private byte[] read() throws IOException {
+        int length = HAND_SIZE;
         byte[] bytes = new byte[length];
-        is.read(bytes, 0, length);
+        in.read(bytes, 0, length);
         return bytes;
     }
 
-    public byte[] read(int length) throws IOException {
+    private byte[] read(int length) throws IOException {
         byte[] bytes = new byte[length];
-        is.read(bytes, 0, length);
+        in.read(bytes, 0, length);
         return bytes;
+    }
+
+    private void rollDice() {
+        for (int i = 0; i < hand.length; i++) {
+            hand[i] = (byte) (random.nextInt(5) + 1);
+        }
+    }
+
+    private void rerollDice(byte[] flags) {
+        for (int i = 0; i < hand.length; i++) {
+            if (flags[i] == -1) hand[i] = (byte) (random.nextInt(5) + 1);
+        }
+    }
+
+    public byte[] getHand() {
+        return hand;
     }
 
     public void close() throws IOException {
-        is.close();
-        os.close();
-
-        socket.close();
+        try {
+            in.close();
+            out.close();
+        } catch (IOException e) {
+            throw new IOException("Failed to close the input and/or output stream for a Player.\nException: " + e.getMessage());
+        }
     }
 }

@@ -9,8 +9,8 @@ class Server {
 
         // Start game
 
-        // close client sockets
-        // close server socket
+        // close clientold sockets
+        // close serverold socket
     }
     game() {
         // Choose who goes first
