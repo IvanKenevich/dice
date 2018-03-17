@@ -1,0 +1,30 @@
+                       SERVER
+Contains the game logic, communicates with both clients
+
+class Server {
+    main() {
+        // Init ServerSocket
+        // Start Listening
+        // Accept 2 connections, make 1 socket for each
+
+        // Start game
+
+        // close client sockets
+        // close server socket
+    }
+    game() {
+        // Choose who goes first
+        // Send the starting state to each socket
+        // Wait for the 'first' to throw
+        // Send 'first's throw to second
+        // Wait for second to throw
+        // Send second's throw to first
+
+        // Wait for the 'first' to RE-throw
+        // Send 'first's RE-throw to second
+        // Wait for second to RE-throw
+        // Send second's RE-throw to first
+
+        // END
+    }
+}

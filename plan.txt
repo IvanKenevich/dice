@@ -1,0 +1,18 @@
+                A GAME
+Server serves 2 client that throw 5 dice.
+
+All the logic happens on the server. It tells each client what it's supposed to be doing
+and then the client performs these operations (like listening for mouse events) and sends
+the result back to the server
+
+Each client will have a simple GUI that can control the game
+Maybe make a GUI for the server just for fun?
+
+              GAME LOGIC
+1. Someone starts at random, throws dice.
+1.1 Send their throw to second player
+2. Other person throws dice.
+2.1 Send their throw to first player
+3. First person selects which to throw again, throws
+4. Second person selects which to throw again, throws
+5. Compare results, END.
