@@ -35,7 +35,7 @@ public class Server implements AutoCloseable {
             } catch (IOException e) {
                 logger.severe(e.getMessage());
             }
-            if (players.size() == 2) new GameThread(players.pop(), players.pop());
+            if (players.size() == 2) new GameThread(players.pop(), players.pop()).start();
         }
     }
 

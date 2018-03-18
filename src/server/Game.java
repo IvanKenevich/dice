@@ -70,7 +70,7 @@ public class Game implements AutoCloseable {
 
         // PLAYER 1 RE-THROWS, PLAYER 2 RECEIVES
         try {
-            playerOne.reroll();
+            roll = playerOne.reroll();
         } catch (IOException e) {
             throw new IOException("Problem re-rolling playerOne's hand.\nException: " + e.getMessage());
         }
@@ -82,7 +82,7 @@ public class Game implements AutoCloseable {
 
         // PLAYER 2 RE-THROWS, PLAYER 1 RECEIVES
         try {
-            playerTwo.reroll();
+            roll = playerTwo.reroll();
         } catch (IOException e) {
             throw new IOException("Problem re-rolling playerTwo's hand.\nException: " + e.getMessage());
         }
