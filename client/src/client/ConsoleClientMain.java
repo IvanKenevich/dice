@@ -20,16 +20,15 @@ public class ConsoleClientMain {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        /*if (args.length != 2) {
+        if (args.length != 2) {
             System.err.println(
                     "Usage: java ConsoleClientMain <host name> <port number>");
             System.exit(1);
-        }*/
+        }
 
         server = Server.getInstance();
 
-        //connect(args[0], Integer.parseInt(args[1]));
-        connect("ada.cs.pdx.edu", 1488);
+        connect(args[0], Integer.parseInt(args[1]));
         start();
     }
 
@@ -39,23 +38,25 @@ public class ConsoleClientMain {
 
     private static void start() {
         ConsoleClientMain.GameState[] mySequence = chooseSequence();
-        for (ConsoleClientMain.GameState state : mySequence) {
-            switch (state) {
-                case THROW:
-                    throwDice();
-                    break;
-                case READ:
-                    getOpponentThrow();
-                    break;
-                case RETHROW:
-                    rethrowDice();
-                    break;
-                case READRETHROW:
-                    getOpponentReThrow();
-                    break;
-                case FINAL:
-                    getWinner();
-                    break;
+        if (mySequence != null) {
+            for (ConsoleClientMain.GameState state : mySequence) {
+                switch (state) {
+                    case THROW:
+                        throwDice();
+                        break;
+                    case READ:
+                        getOpponentThrow();
+                        break;
+                    case RETHROW:
+                        rethrowDice();
+                        break;
+                    case READRETHROW:
+                        getOpponentReThrow();
+                        break;
+                    case FINAL:
+                        getWinner();
+                        break;
+                }
             }
         }
     }
