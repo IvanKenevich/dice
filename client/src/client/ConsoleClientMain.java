@@ -20,15 +20,16 @@ public class ConsoleClientMain {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        if (args.length != 2) {
+        /*if (args.length != 2) {
             System.err.println(
                     "Usage: java ConsoleClientMain <host name> <port number>");
             System.exit(1);
-        }
+        }*/
 
         server = Server.getInstance();
 
-        connect(args[0], Integer.parseInt(args[1]));
+        //connect(args[0], Integer.parseInt(args[1]));
+        connect("ada.cs.pdx.edu", 1488);
         start();
     }
 
@@ -128,7 +129,9 @@ public class ConsoleClientMain {
 
     private static ConsoleClientMain.GameState[] chooseSequence() {
         try {
+            System.out.println("Waiting for opponent to throw...");
             myTurn = server.readByte();
+            if (myTurn == SECOND) System.out.println("Waiting for opponent to throw...");
             return myTurn == FIRST ? playerOneSequence : playerTwoSequence;
         } catch (IOException e) {
             System.err.print("Problem getting player's sequence: " + e.getMessage());
@@ -140,27 +143,4 @@ public class ConsoleClientMain {
     private enum GameState {
         THROW, READ, RETHROW, READRETHROW, FINAL
     }
-
-    /*
-    1. Ask where the game server is.
-    2. Try to connect to the game server
-    3. Wait for the game to start...
-
-    4. If you go first, choose sequence 1, otherwise sequence 2
-    5. Start sequence
-
-    seq 1:
-    1. throw dice
-    2. read opponent throw
-    3. rethrow
-    4. read opponent rethrow
-    5. get winner
-
-    seq 2:
-    1. read opponent throw
-    2. throw dice
-    3. read opponent rethrow
-    4. rethrow
-    5. get winner
-     */
 }

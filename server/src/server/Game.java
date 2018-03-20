@@ -25,7 +25,7 @@ public class Game implements AutoCloseable {
      */
     public void start() throws IOException {
         // DECIDING WHO GOES FIRST
-        byte turn = (byte) (random.nextBoolean() ? FIRST : SECOND);
+        byte turn = (random.nextBoolean() ? FIRST : SECOND);
 
         // if turn is 0, keep playerOne and playerTwo the same
         // otherwise, switch them
