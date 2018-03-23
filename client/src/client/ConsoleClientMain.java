@@ -16,7 +16,7 @@ public class ConsoleClientMain {
     private static final byte FIRST = 0, SECOND = 1;
     private static byte myTurn;
 
-    private static Server server;
+    private static ServerCommunicator serverCommunicator;
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -26,14 +26,14 @@ public class ConsoleClientMain {
             System.exit(1);
         }
 
-        server = Server.getInstance();
+        serverCommunicator = ServerCommunicator.getInstance();
 
         connect(args[0], Integer.parseInt(args[1]));
         start();
     }
 
     private static void connect(String host, int port) {
-        server.initialize(host, port);
+        serverCommunicator.initialize(host, port);
     }
 
     private static void start() {
@@ -65,9 +65,9 @@ public class ConsoleClientMain {
         try {
             System.out.println("Hit enter when you're ready to throw...");
             scanner.nextLine();
-            server.write((byte) 1);
+            serverCommunicator.write((byte) 1);
 
-            byte[] myThrow = server.read();
+            byte[] myThrow = serverCommunicator.read();
             System.out.printf("Your throw was: %d  %d  %d  %d  %d\n",
                     myThrow[0], myThrow[1], myThrow[2], myThrow[3], myThrow[4]);
         } catch (IOException e) {
@@ -78,7 +78,7 @@ public class ConsoleClientMain {
 
     private static void getOpponentThrow() {
         try {
-            byte[] theirThrow = server.read();
+            byte[] theirThrow = serverCommunicator.read();
             System.out.printf("Your opponent threw: %d  %d  %d  %d  %d\n",
                     theirThrow[0], theirThrow[1], theirThrow[2], theirThrow[3], theirThrow[4]);
         } catch (IOException e) {
@@ -96,9 +96,9 @@ public class ConsoleClientMain {
             for (String part : parts) {
                 result[Integer.parseInt(part)] = -1;
             }
-            server.write(result);
+            serverCommunicator.write(result);
 
-            result = server.read();
+            result = serverCommunicator.read();
             System.out.printf("Your throw was: %d  %d  %d  %d  %d\n",
                     result[0], result[1], result[2], result[3], result[4]);
         } catch (IOException e) {
@@ -109,7 +109,7 @@ public class ConsoleClientMain {
 
     private static void getOpponentReThrow() {
         try {
-            byte[] theirThrow = server.read();
+            byte[] theirThrow = serverCommunicator.read();
             System.out.printf("Your opponent re-threw: %d  %d  %d  %d  %d\n",
                     theirThrow[0], theirThrow[1], theirThrow[2], theirThrow[3], theirThrow[4]);
         } catch (IOException e) {
@@ -120,7 +120,7 @@ public class ConsoleClientMain {
 
     private static void getWinner() {
         try {
-            if (server.readByte() == myTurn) System.out.println("You've won!");
+            if (serverCommunicator.readByte() == myTurn) System.out.println("You've won!");
             else System.out.println("You LOST!");
         } catch (IOException e) {
             System.err.print("Problem getting game's winner: " + e.getMessage());
@@ -131,7 +131,7 @@ public class ConsoleClientMain {
     private static ConsoleClientMain.GameState[] chooseSequence() {
         try {
             System.out.println("Waiting for opponent to throw...");
-            myTurn = server.readByte();
+            myTurn = serverCommunicator.readByte();
             if (myTurn == SECOND) System.out.println("Waiting for opponent to throw...");
             return myTurn == FIRST ? playerOneSequence : playerTwoSequence;
         } catch (IOException e) {

@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+.floo
+.flooignore
+.idea/
+client/src/META-INF/
+dice.iml
+out/
