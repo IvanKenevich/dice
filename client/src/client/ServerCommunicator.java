@@ -57,24 +57,34 @@ public class ServerCommunicator {
             case RECEIVING_MYTHROW:
                 write((byte)1);
                 gameState.setMyHand(read());
+                gameState.step();
                 break;
             case DISPLAYING_MYTHROW:
                 break;
             case RECEIVING_THEIRTHROW:
+                gameState.setOpponentHand(read());
+                gameState.step();
                 break;
             case DISPLAYING_THEIRTHROW:
                 break;
             case WAITING_MYRETHROW_INPUT:
                 break;
             case RECEIVING_MYRETHROW:
+                write(gameState.getMyMask());
+                gameState.setMyHand(read());
+                gameState.step();
                 break;
             case DISPLAYING_MYRETHROW:
                 break;
             case RECEIVING_THEIRRETHROW:
+                gameState.setOpponentHand(read());
+                gameState.step();
                 break;
             case DISPLAYING_THEIRRETHROW:
                 break;
             case RECEIVING_WINNER:
+                gameState.setWinner(readByte());
+                gameState.step();
                 break;
             case DISPLAYING_WINNER:
                 break;
@@ -95,8 +105,12 @@ public class ServerCommunicator {
         }
     }
 
-    private void write(byte[] data) throws IOException {
-        out.write(data);
+    private void write(byte[] data) {
+        try {
+            out.write(data);
+        } catch (IOException e) {
+
+        }
     }
 
     private byte readByte() {

@@ -8,15 +8,17 @@ import java.util.Queue;
 public class GameState {
     private static GameState instance = null;
 
-    private final byte FIRST = 0, SECOND = 1;
     private final int HAND_SIZE = 5;
 
+    private final byte FIRST = 0, SECOND = 1;
     private byte myOrder;
+    private byte winner;
 
     private State currentState;
     private Queue<State> mySequence;
 
     private byte[] myHand;
+    private byte[] myMask; // for rethrowing
     private byte[] opponentHand;
 
     private String host;
@@ -28,6 +30,10 @@ public class GameState {
      * DISPLAYING means that you present data to the player
      *
      * SENDING is NOT a word, because it doesn't require a 'change of scene'
+     * a ServerCommunicator will do 'SENDING' inside of RECEIVING
+     *
+     * ... i guess sending can be added to modularize the code in ServerCommunicator
+     * and it can just be ignored by the 'front end'
       */
     public enum State {
         WAITING_CONNECT_INPUT, RECEIVING_ORDER, DISPLAYING_ORDER,           // CONNECT
@@ -137,5 +143,21 @@ public class GameState {
 
     public int getHAND_SIZE() {
         return HAND_SIZE;
+    }
+
+    public byte[] getMyMask() {
+        return myMask;
+    }
+
+    public void setMyMask(byte[] myMask) {
+        this.myMask = myMask;
+    }
+
+    public byte getWinner() {
+        return winner;
+    }
+
+    public void setWinner(byte winner) {
+        this.winner = winner;
     }
 }

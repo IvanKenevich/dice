@@ -16,7 +16,7 @@ public class SwingClientMain {
         frame.setVisible(true);
     }
 
-    private static class DicePanel extends JPanel implements DiceClient {
+    private static class DicePanel extends JPanel {
         final int SCREEN_WIDTH, SCREEN_HEIGHT;
 
         private JTextField hostField, portField;
@@ -100,7 +100,9 @@ public class SwingClientMain {
                 hostField.setVisible(false);
                 portField.setVisible(false);
                 connectButton.setVisible(false);
-                connect(hostField.getText(), Integer.parseInt(portField.getText()));
+
+                gameState.setHost(hostField.getText());
+                gameState.setPort(Integer.parseInt(portField.getText()));
             });
             add(connectButton);
             connectButton.setVisible(false);
@@ -112,32 +114,6 @@ public class SwingClientMain {
             hostField.setVisible(true);
             portField.setVisible(true);
             connectButton.setVisible(true);
-        }
-
-        @Override
-        public int connect(String host, int port) {
-            System.out.println("click " + host + ":" + port);
-            return 0;
-        }
-
-        @Override
-        public byte[] throwDice() {
-            return new byte[0];
-        }
-
-        @Override
-        public byte[] rethrowDice(byte[] mask) {
-            return new byte[0];
-        }
-
-        @Override
-        public byte[] getOpponentThrow() {
-            return new byte[0];
-        }
-
-        @Override
-        public byte[] getOpponentRethrow() {
-            return new byte[0];
         }
     }
 }
