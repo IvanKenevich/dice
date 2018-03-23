@@ -2,8 +2,6 @@ package client;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class SwingClientMain {
     public static void main(String[] args) {
@@ -23,14 +21,16 @@ public class SwingClientMain {
         private JButton connectButton;
 
         private GameState gameState;
+        private ServerCommunicator serverCommunicator;
 
         public DicePanel(Dimension screen) {
             super(null);
             SCREEN_WIDTH = (int) screen.getWidth();
             SCREEN_HEIGHT = (int) screen.getHeight();
 
-            initGUI();
             gameState = GameState.getInstance();
+            serverCommunicator = ServerCommunicator.getInstance();
+            initGUI();
         }
 
         public void paintComponent(Graphics g) {
@@ -40,10 +40,13 @@ public class SwingClientMain {
                     drawConnectScreen(g);
                     break;
                 case RECEIVING_ORDER:
+                    serverCommunicator.update();
                     break;
                 case DISPLAYING_ORDER:
+                    drawGameOrder(g);
                     break;
                 case WAITING_MYTHROW_INPUT:
+
                     break;
                 case RECEIVING_MYTHROW:
                     break;
@@ -103,6 +106,7 @@ public class SwingClientMain {
 
                 gameState.setHost(hostField.getText());
                 gameState.setPort(Integer.parseInt(portField.getText()));
+                gameState.step();
             });
             add(connectButton);
             connectButton.setVisible(false);
@@ -114,6 +118,20 @@ public class SwingClientMain {
             hostField.setVisible(true);
             portField.setVisible(true);
             connectButton.setVisible(true);
+        }
+
+        private void drawGameOrder(Graphics g) {
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+            g.setColor(Color.WHITE);
+            g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SCREEN_HEIGHT / 20));
+            g.drawString((gameState.getMyOrder() == GameState.FIRST ? "You're FIRST" : "You're SECOND"), 0, SCREEN_HEIGHT/2);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            gameState.step();
         }
     }
 }

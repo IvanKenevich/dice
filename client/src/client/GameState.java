@@ -8,9 +8,9 @@ import java.util.Queue;
 public class GameState {
     private static GameState instance = null;
 
-    private final int HAND_SIZE = 5;
+    private static final int HAND_SIZE = 5;
 
-    private final byte FIRST = 0, SECOND = 1;
+    public static final byte FIRST = 0, SECOND = 1;
     private byte myOrder;
     private byte winner;
 
@@ -73,7 +73,7 @@ public class GameState {
 
     private void setInitialSequence() {
         mySequence = new LinkedList<>(Arrays.asList(initialSequence));
-        currentState = mySequence.remove();
+        step();
     }
 
     private int chooseSequence(byte order) {

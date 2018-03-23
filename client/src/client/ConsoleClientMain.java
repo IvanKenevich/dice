@@ -1,147 +1,84 @@
 package client;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class ConsoleClientMain {
-
-    private static final ConsoleClientMain.GameState[] playerOneSequence = {
-            GameState.THROW, GameState.READ, GameState.RETHROW, GameState.READRETHROW, GameState.FINAL
-    };
-
-    private static final ConsoleClientMain.GameState[] playerTwoSequence = {
-            GameState.READ, GameState.THROW, GameState.READRETHROW, GameState.RETHROW, GameState.FINAL
-    };
-
-    private static final byte FIRST = 0, SECOND = 1;
-    private static byte myTurn;
-
     private static ServerCommunicator serverCommunicator;
+    private static GameState gameState;
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        if (args.length != 2) {
-            System.err.println(
-                    "Usage: java ConsoleClientMain <host name> <port number>");
-            System.exit(1);
-        }
-
         serverCommunicator = ServerCommunicator.getInstance();
+        gameState = GameState.getInstance();
 
-        connect(args[0], Integer.parseInt(args[1]));
         start();
     }
 
-    private static void connect(String host, int port) {
-        serverCommunicator.initialize(host, port);
-    }
-
     private static void start() {
-        ConsoleClientMain.GameState[] mySequence = chooseSequence();
-        if (mySequence != null) {
-            for (ConsoleClientMain.GameState state : mySequence) {
-                switch (state) {
-                    case THROW:
-                        throwDice();
-                        break;
-                    case READ:
-                        getOpponentThrow();
-                        break;
-                    case RETHROW:
-                        rethrowDice();
-                        break;
-                    case READRETHROW:
-                        getOpponentReThrow();
-                        break;
-                    case FINAL:
-                        getWinner();
-                        break;
-                }
+        do {
+            switch (gameState.getCurrentState()) {
+                case WAITING_CONNECT_INPUT:
+                    System.out.println("Enter host (ex: ada.cs.pdx.edu): ");
+                    String host = scanner.nextLine();
+                    System.out.println("Enter port (ex: 1488): ");
+                    int port = Integer.parseInt(scanner.nextLine());
+                    gameState.setHost(host);
+                    gameState.setPort(port);
+                    //gameState.step();
+                    break;
+                case DISPLAYING_ORDER:
+                    System.out.println("You're going " +
+                            (gameState.getMyOrder() == GameState.FIRST ? "FIRST" : "SECOND"));
+                    //gameState.step();
+                    break;
+                case WAITING_MYTHROW_INPUT:
+                    System.out.print("Hit enter when you are ready to throw...");
+                    scanner.nextLine();
+                    //gameState.step();
+                    break;
+                case DISPLAYING_MYTHROW:
+                    byte [] myThrow = gameState.getMyHand();
+                    System.out.printf("Your throw was: %d  %d  %d  %d  %d\n",
+                            myThrow[0], myThrow[1], myThrow[2], myThrow[3], myThrow[4]);
+                    //gameState.step();
+                    break;
+                case DISPLAYING_THEIRTHROW:
+                    byte[] theirThrow = gameState.getOpponentHand();
+                    System.out.printf("Your opponent threw: %d  %d  %d  %d  %d\n",
+                            theirThrow[0], theirThrow[1], theirThrow[2], theirThrow[3], theirThrow[4]);
+                    //gameState.step();
+                    break;
+                case WAITING_MYRETHROW_INPUT:
+                    System.out.print("Enter the indices you want to re-throw separated by spaces: ");
+                    String rethrow = scanner.nextLine();
+                    String[] parts = rethrow.split(" ");
+                    byte[] result = new byte[5];
+                    for (String part : parts) {
+                        result[Integer.parseInt(part)] = -1;
+                    }
+                    gameState.setMyMask(result);
+                    //gameState.step();
+                    break;
+                case DISPLAYING_MYRETHROW:
+                    myThrow = gameState.getMyHand();
+                    System.out.printf("Your re-throw was: %d  %d  %d  %d  %d\n",
+                            myThrow[0], myThrow[1], myThrow[2], myThrow[3], myThrow[4]);
+                    //gameState.step();
+                    break;
+                case DISPLAYING_THEIRRETHROW:
+                    theirThrow = gameState.getOpponentHand();
+                    System.out.printf("Your opponent re-threw: %d  %d  %d  %d  %d\n",
+                            theirThrow[0], theirThrow[1], theirThrow[2], theirThrow[3], theirThrow[4]);
+                    //gameState.step();
+                    break;
+                case DISPLAYING_WINNER:
+                    System.out.println((gameState.getWinner() == gameState.getMyOrder() ? "You won!" : "You lost!"));
+                    //gameState.step();
+                    break;
+                default:
+                    serverCommunicator.update();
+                    break;
             }
-        }
-    }
-
-    private static void throwDice() {
-        try {
-            System.out.println("Hit enter when you're ready to throw...");
-            scanner.nextLine();
-            serverCommunicator.write((byte) 1);
-
-            byte[] myThrow = serverCommunicator.read();
-            System.out.printf("Your throw was: %d  %d  %d  %d  %d\n",
-                    myThrow[0], myThrow[1], myThrow[2], myThrow[3], myThrow[4]);
-        } catch (IOException e) {
-            System.err.print("Problem throwing dice: " + e.getMessage());
-            System.exit(1);
-        }
-    }
-
-    private static void getOpponentThrow() {
-        try {
-            byte[] theirThrow = serverCommunicator.read();
-            System.out.printf("Your opponent threw: %d  %d  %d  %d  %d\n",
-                    theirThrow[0], theirThrow[1], theirThrow[2], theirThrow[3], theirThrow[4]);
-        } catch (IOException e) {
-            System.err.print("Problem reading opponent's throw: " + e.getMessage());
-            System.exit(1);
-        }
-    }
-
-    private static void rethrowDice() {
-        try {
-            System.out.print("Enter the indices you want to re-throw separated by spaces: ");
-            String rethrow = scanner.nextLine();
-            String[] parts = rethrow.split(" ");
-            byte[] result = new byte[5];
-            for (String part : parts) {
-                result[Integer.parseInt(part)] = -1;
-            }
-            serverCommunicator.write(result);
-
-            result = serverCommunicator.read();
-            System.out.printf("Your throw was: %d  %d  %d  %d  %d\n",
-                    result[0], result[1], result[2], result[3], result[4]);
-        } catch (IOException e) {
-            System.err.print("Problem rethrowing dice: " + e.getMessage());
-            System.exit(1);
-        }
-    }
-
-    private static void getOpponentReThrow() {
-        try {
-            byte[] theirThrow = serverCommunicator.read();
-            System.out.printf("Your opponent re-threw: %d  %d  %d  %d  %d\n",
-                    theirThrow[0], theirThrow[1], theirThrow[2], theirThrow[3], theirThrow[4]);
-        } catch (IOException e) {
-            System.err.print("Problem reading opponent's re-throw: " + e.getMessage());
-            System.exit(1);
-        }
-    }
-
-    private static void getWinner() {
-        try {
-            if (serverCommunicator.readByte() == myTurn) System.out.println("You've won!");
-            else System.out.println("You LOST!");
-        } catch (IOException e) {
-            System.err.print("Problem getting game's winner: " + e.getMessage());
-            System.exit(1);
-        }
-    }
-
-    private static ConsoleClientMain.GameState[] chooseSequence() {
-        try {
-            System.out.println("Waiting for opponent to throw...");
-            myTurn = serverCommunicator.readByte();
-            if (myTurn == SECOND) System.out.println("Waiting for opponent to throw...");
-            return myTurn == FIRST ? playerOneSequence : playerTwoSequence;
-        } catch (IOException e) {
-            System.err.print("Problem getting player's sequence: " + e.getMessage());
-            System.exit(1);
-        }
-        return null;
-    }
-
-    private enum GameState {
-        THROW, READ, RETHROW, READRETHROW, FINAL
+        } while(gameState.step() != -1);
     }
 }

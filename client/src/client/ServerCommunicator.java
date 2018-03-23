@@ -26,13 +26,11 @@ public class ServerCommunicator {
     }
 
     /**
-     * @param host the host of the game server
-     * @param port the port of the game server
      * @return -1 if the socket connection fails, 0 if not
      */
-    public int initialize(String host, int port) {
+    public int initialize() {
         try {
-            socket = new Socket(host, port);
+            socket = new Socket(gameState.getHost(), gameState.getPort());
             in = socket.getInputStream();
             out = socket.getOutputStream();
         } catch (IOException e) {
@@ -46,9 +44,9 @@ public class ServerCommunicator {
             case WAITING_CONNECT_INPUT:
                 break;
             case RECEIVING_ORDER:
-                initialize(gameState.getHost(), gameState.getPort());
+                initialize();
                 gameState.setMyOrder(readByte());
-                gameState.step();
+                //gameState.step();
                 break;
             case DISPLAYING_ORDER:
                 break;
@@ -57,13 +55,13 @@ public class ServerCommunicator {
             case RECEIVING_MYTHROW:
                 write((byte)1);
                 gameState.setMyHand(read());
-                gameState.step();
+                //gameState.step();
                 break;
             case DISPLAYING_MYTHROW:
                 break;
             case RECEIVING_THEIRTHROW:
                 gameState.setOpponentHand(read());
-                gameState.step();
+                //gameState.step();
                 break;
             case DISPLAYING_THEIRTHROW:
                 break;
@@ -72,19 +70,19 @@ public class ServerCommunicator {
             case RECEIVING_MYRETHROW:
                 write(gameState.getMyMask());
                 gameState.setMyHand(read());
-                gameState.step();
+                //gameState.step();
                 break;
             case DISPLAYING_MYRETHROW:
                 break;
             case RECEIVING_THEIRRETHROW:
                 gameState.setOpponentHand(read());
-                gameState.step();
+                //gameState.step();
                 break;
             case DISPLAYING_THEIRRETHROW:
                 break;
             case RECEIVING_WINNER:
                 gameState.setWinner(readByte());
-                gameState.step();
+                //gameState.step();
                 break;
             case DISPLAYING_WINNER:
                 break;
