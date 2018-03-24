@@ -6,8 +6,9 @@ import java.awt.*;
 public class SwingClientMain {
     public static void main(String[] args) {
         JFrame frame = new JFrame("Dice");
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[1];
-        frame.setSize(gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight());
+        //GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[1];
+        //frame.setSize(gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight());
+        frame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.add(new DicePanel(frame.getSize()));
@@ -35,6 +36,8 @@ public class SwingClientMain {
 
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
+            System.out.println(gameState.getCurrentState());
+            System.out.println(gameState.getMyOrder());
             switch (gameState.getCurrentState()) {
                 case WAITING_CONNECT_INPUT:
                     drawConnectScreen(g);
@@ -124,13 +127,13 @@ public class SwingClientMain {
             g.setColor(Color.BLACK);
             g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
             g.setColor(Color.WHITE);
-            g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SCREEN_HEIGHT / 20));
+            g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 30));
             g.drawString((gameState.getMyOrder() == GameState.FIRST ? "You're FIRST" : "You're SECOND"), 0, SCREEN_HEIGHT/2);
-            try {
+            /*try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
+            }*/
             gameState.step();
         }
     }

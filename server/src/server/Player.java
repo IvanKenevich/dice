@@ -124,4 +124,8 @@ public class Player implements AutoCloseable {
             throw new IOException("Failed to close the input and/or output stream for a Player.\nException: " + e.getMessage());
         }
     }
+
+    public String toString() {
+        return client.toString();
+    }
 }

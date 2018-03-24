@@ -32,6 +32,7 @@ public class Server implements AutoCloseable {
         while (true) {
             try {
                players.push(new Player(socket.accept()));
+                System.out.println("Accepted connection: " + players.peek());
             } catch (IOException e) {
                 logger.severe(e.getMessage());
             }

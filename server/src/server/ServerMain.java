@@ -3,7 +3,7 @@ package server;
 public class ServerMain {
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.err.println("Usage: java ServerMain <port number>");
+            System.err.println("Usage: java server.ServerMain <port number>");
             System.exit(1);
         }
 

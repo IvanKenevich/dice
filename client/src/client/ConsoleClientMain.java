@@ -18,9 +18,9 @@ public class ConsoleClientMain {
         do {
             switch (gameState.getCurrentState()) {
                 case WAITING_CONNECT_INPUT:
-                    System.out.println("Enter host (ex: ada.cs.pdx.edu): ");
+                    System.out.print("Enter host (ex: ada.cs.pdx.edu): ");
                     String host = scanner.nextLine();
-                    System.out.println("Enter port (ex: 1488): ");
+                    System.out.print("Enter port (ex: 1488): ");
                     int port = Integer.parseInt(scanner.nextLine());
                     gameState.setHost(host);
                     gameState.setPort(port);
